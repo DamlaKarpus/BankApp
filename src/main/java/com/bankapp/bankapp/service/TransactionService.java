@@ -62,7 +62,6 @@ public class TransactionService {
     }
 
     // Para gönderme (havale)
-    @Transactional
     public Transaction transfer(Long senderId, Long receiverId, double amount) {
         Account sender = accountRepository.findById(senderId)
                 .orElseThrow(() -> new RuntimeException("Gönderen hesap bulunamadı"));

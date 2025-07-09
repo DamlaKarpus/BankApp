@@ -37,7 +37,8 @@ public class Account {
         return active;
     }
 
-    public void setBalance(BigDecimal zero) {
+    public void setBalance(BigDecimal balance) {
+        this.balance=balance;
     }
 }
 

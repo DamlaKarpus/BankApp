@@ -12,4 +12,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     // Girişte e-posta ve şifre ile kontrol
     Optional<User> findByEmailAndPassword(String email, String password);
+
+    Optional<User> findByUsername(String username);
+
 }
