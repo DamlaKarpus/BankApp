@@ -1,0 +1,20 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/bank_app
+    username: postgres
+    password: 12345
+
+  jpa:
+    hibernate:
+      ddl-auto: update      # tabloları otomatik oluşturur
+    show-sql: true          # konsolda SQL sorgularını gösterir
+    properties:
+      hibernate:
+        format_sql: true
+
+  # Türkçe karakter sorunları varsa yardımcı olur:
+  sql:
+    init:
+      encoding: UTF-8
+
+
