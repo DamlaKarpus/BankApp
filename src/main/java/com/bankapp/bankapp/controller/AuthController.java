@@ -37,7 +37,7 @@ public class AuthController {
             return ResponseEntity.ok(response);
 
         } catch (BadCredentialsException e) {
-            return ResponseEntity.status(HttpStatus.MULTI_STATUS).body("Hatalı kullanıcı adı veya şifre");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.toString());
         }
     }
 

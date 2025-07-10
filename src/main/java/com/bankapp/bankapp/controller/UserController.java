@@ -36,7 +36,7 @@ public class UserController {
     // Yeni kullanıcı oluştur (kayıt)
     @PostMapping("/register")
     public ResponseEntity<User> registerUser(@RequestBody User user) {
-        User createdUser = userService.registerUser(user.getName(), user.getEmail(), user.getPassword());
+        User createdUser = userService.registerUser(user.getUserName(), user.getEmail(), user.getPassword());
         return ResponseEntity.ok(createdUser);
     }
 
@@ -44,7 +44,7 @@ public class UserController {
     @PutMapping("/{id}")
     public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User updatedUser) {
         try {
-            User user = userService.updateUser(id, updatedUser.getName(), updatedUser.getEmail(), updatedUser.getPassword());
+            User user = userService.updateUser(id, updatedUser.getUserName(), updatedUser.getEmail(), updatedUser.getPassword());
             return ResponseEntity.ok(user);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();

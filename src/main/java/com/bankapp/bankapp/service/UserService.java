@@ -2,6 +2,7 @@ package com.bankapp.bankapp.service;
 
 import com.bankapp.bankapp.entity.User;
 import com.bankapp.bankapp.repository.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,17 +12,20 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder; // ✅ eklendi
 
-    // Constructor injection
-    public UserService(UserRepository userRepository) {
+    // ✅ Constructor injection düzeltildi
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder; // ✅ atama yapıldı
     }
 
+    // ✅ Şifre encode ediliyor
     public User registerUser(String name, String email, String password) {
         User user = new User();
-        user.setName(name);
+        user.setUserName(name);
         user.setEmail(email);
-        user.setPassword(password);
+        user.setPassword(passwordEncoder.encode(password));  // hashli şekilde kaydedilir
         return userRepository.save(user);
     }
 
@@ -41,9 +45,10 @@ public class UserService {
         Optional<User> optionalUser = userRepository.findById(id);
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
-            user.setName(name);
+            user.setUserName(name);
             user.setEmail(email);
-            user.setPassword(password);
+            // ✅ Güncellenen parolanın da encode edilmesi gerekir
+            user.setPassword(passwordEncoder.encode(password));
             return userRepository.save(user);
         } else {
             throw new RuntimeException("Kullanıcı bulunamadı.");
