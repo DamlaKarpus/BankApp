@@ -47,5 +47,3 @@ public class AuthController {
         return ResponseEntity.ok("Çıkış yapıldı. Token client tarafından silinmeli.");
     }
 }
-
-

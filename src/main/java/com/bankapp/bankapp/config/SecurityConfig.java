@@ -33,7 +33,7 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/login", "/register").permitAll()
-                        .requestMatchers("/account/**", "/profile/**", "/orders/**").authenticated()
+                        .requestMatchers("/api/accounts/**", "/api/users/**", "/api/transaction/**").authenticated()
                         .anyRequest().permitAll()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -47,8 +47,8 @@ public class SecurityConfig {
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(userDetailsService);
-        // test için şifreyi şifresiz karşılaştırıyoruz
-        authProvider.setPasswordEncoder(org.springframework.security.crypto.password.NoOpPasswordEncoder.getInstance());
+        // test için şifreyi şifresiz karşılaştırıyoruz()
+        authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }
 

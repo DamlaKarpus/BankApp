@@ -21,7 +21,7 @@ public class UserDetailsService implements org.springframework.security.core.use
 
         return org.springframework.security.core.userdetails.User
                 .withUsername(user.getUserName())
-                .password("{noop}" + user.getPassword()) // {noop} şifreyi encode etmez, gerçek projede BCrypt kullan
+                .password(user.getPassword())
                 .authorities("USER")
                 .build();
     }
