@@ -12,25 +12,34 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder; // ✅ eklendi
+    private final PasswordEncoder passwordEncoder;
 
-    // ✅ Constructor injection düzeltildi
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder; // ✅ atama yapıldı
+        this.passwordEncoder = passwordEncoder;
     }
 
-    // ✅ Şifre encode ediliyor
+    // --- Kullanıcı kaydı ---
     public User registerUser(String name, String email, String password) {
+        if (userRepository.findByEmail(email).isPresent()) {
+            throw new RuntimeException("Bu email zaten kayıtlı.");
+        }
+
+        if (userRepository.findByUserName(name).isPresent()) {
+            throw new RuntimeException("Bu kullanıcı adı zaten kullanılıyor.");
+        }
+
         User user = new User();
         user.setUserName(name);
         user.setEmail(email);
-        user.setPassword(passwordEncoder.encode(password));  // hashli şekilde kaydedilir
+        user.setPassword(passwordEncoder.encode(password));
+
         return userRepository.save(user);
     }
 
-    public Optional<User> login(String email, String password) {
-        return userRepository.findByEmailAndPassword(email, password);
+    // --- Kullanıcı bul ---
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 
     public Optional<User> findById(Long id) {
@@ -41,20 +50,38 @@ public class UserService {
         return userRepository.findAll();
     }
 
+    // --- Mevcut updateUser metodunu koru ---
     public User updateUser(Long id, String name, String email, String password) {
-        Optional<User> optionalUser = userRepository.findById(id);
-        if (optionalUser.isPresent()) {
-            User user = optionalUser.get();
-            user.setUserName(name);
-            user.setEmail(email);
-            // ✅ Güncellenen parolanın da encode edilmesi gerekir
-            user.setPassword(passwordEncoder.encode(password));
-            return userRepository.save(user);
-        } else {
-            throw new RuntimeException("Kullanıcı bulunamadı.");
-        }
+        return userRepository.findById(id)
+                .map(user -> {
+                    userRepository.findByEmail(email)
+                            .filter(u -> !u.getId().equals(id))
+                            .ifPresent(u -> { throw new RuntimeException("Bu email başka bir kullanıcı tarafından kullanılıyor."); });
+
+                    userRepository.findByUserName(name)
+                            .filter(u -> !u.getId().equals(id))
+                            .ifPresent(u -> { throw new RuntimeException("Bu kullanıcı adı başka bir kullanıcı tarafından kullanılıyor."); });
+
+                    user.setUserName(name);
+                    user.setEmail(email);
+                    user.setPassword(passwordEncoder.encode(password));
+                    return userRepository.save(user);
+                })
+                .orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı."));
     }
 
+    // --- Yeni overload: User objesi ile update ---
+    public User updateUser(User user) {
+        return userRepository.save(user);
+    }
+
+    // --- Token kaydet ---
+    public User saveToken(User user, String token) {
+        user.setToken(token);
+        return userRepository.save(user);
+    }
+
+    // --- Kullanıcı sil ---
     public void deleteUser(Long id) {
         if (userRepository.existsById(id)) {
             userRepository.deleteById(id);
