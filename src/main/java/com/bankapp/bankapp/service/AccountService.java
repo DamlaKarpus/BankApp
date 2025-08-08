@@ -58,6 +58,10 @@ public class AccountService {
         return accountRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Hesap bulunamadı."));
     }
+
+    public Account save(Account account) {
+        return null;
+    }
 }
 
 

@@ -12,25 +12,23 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder; // ✅ eklendi
+    private final PasswordEncoder passwordEncoder;
 
-    // ✅ Constructor injection düzeltildi
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder; // ✅ atama yapıldı
+        this.passwordEncoder = passwordEncoder;
     }
 
-    // ✅ Şifre encode ediliyor
     public User registerUser(String name, String email, String password) {
         User user = new User();
         user.setUserName(name);
         user.setEmail(email);
-        user.setPassword(passwordEncoder.encode(password));  // hashli şekilde kaydedilir
+        user.setPassword(passwordEncoder.encode(password));
         return userRepository.save(user);
     }
 
-    public Optional<User> login(String email, String password) {
-        return userRepository.findByEmailAndPassword(email, password);
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 
     public Optional<User> findById(Long id) {
@@ -47,7 +45,6 @@ public class UserService {
             User user = optionalUser.get();
             user.setUserName(name);
             user.setEmail(email);
-            // ✅ Güncellenen parolanın da encode edilmesi gerekir
             user.setPassword(passwordEncoder.encode(password));
             return userRepository.save(user);
         } else {
