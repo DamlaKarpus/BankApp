@@ -25,6 +25,8 @@ public class Account {
 
     private BigDecimal balance = BigDecimal.ZERO;
 
+    private String name;  // ✅ Burayı Long yerine String yaptık
+
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
@@ -38,8 +40,6 @@ public class Account {
     }
 
     public void setBalance(BigDecimal balance) {
-        this.balance=balance;
+        this.balance = balance;
     }
 }
-
-
