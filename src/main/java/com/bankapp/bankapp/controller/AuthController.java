@@ -62,7 +62,7 @@ public class AuthController {
 
             UserDetails userDetails = (UserDetails) auth.getPrincipal();
             String token = jwtUtil.generateToken(userDetails.getUsername());
-
+          
             // Kullanıcıyı al ve token'ı kaydet
             User user = userService.findByEmail(userDetails.getUsername())
                     .orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı"));
