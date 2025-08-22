@@ -19,17 +19,29 @@ public class User {
     private Long id;
 
     @Column(unique = true, nullable = false)
-    private String userName;
+    private String userName;  // Kullanıcı adı
 
     @Column(unique = true, nullable = false)
-    private String email;
+    private String email;     // Email login/register için
 
     @Column(nullable = false)
-    private String password;
+    private String password;  // Şifre
+
+    @Column(length = 500)  // JWT uzun olabileceği için
+    private String token;   // Login sonrası üretilen JWT token
 
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Account> accounts;
+
+    // Opsiyonel: register sırasında direkt DTO'dan doldurmak için constructor
+    public User() {}
+
+    public User(String userName, String email, String password) {
+        this.userName = userName;
+        this.email = email;
+        this.password = password;
+    }
 }
