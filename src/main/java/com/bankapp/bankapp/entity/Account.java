@@ -25,21 +25,12 @@ public class Account {
 
     private BigDecimal balance = BigDecimal.ZERO;
 
-    private String name;  // ✅ Burayı Long yerine String yaptık
+    private String name;
+
+    @Column(unique = true, nullable = false, length = 26) // IBAN alanı
+    private String iban;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-
-    public void setActive(boolean active) {
-        this.active = active;
-    }
-
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setBalance(BigDecimal balance) {
-        this.balance = balance;
-    }
 }

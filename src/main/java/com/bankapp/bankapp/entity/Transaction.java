@@ -27,8 +27,8 @@ public class Transaction {
     @JoinColumn(name = "target_account_id")
     private Account targetAccount;
 
-    // İşlem yapılan hesap numarası (metinsel olarak)
-    private String accountNumber;
+    // İşlem yapılan hesap IBAN numarası (string)
+    private String accountIban;
 
     // Tutar
     private Double amount;
@@ -40,4 +40,3 @@ public class Transaction {
     // İşlem tipi (TRANSFER, DEPOSIT, WITHDRAW)
     private String type;
 }
-

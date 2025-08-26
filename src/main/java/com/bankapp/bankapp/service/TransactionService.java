@@ -22,8 +22,9 @@ public class TransactionService {
     }
 
     // Para yatırma
-    public Transaction deposit(Long accountId, double amount) {
-        Account account = accountRepository.findById(accountId)
+    @Transactional
+    public Transaction deposit(String iban, double amount) {
+        Account account = accountRepository.findByIban(iban)
                 .orElseThrow(() -> new RuntimeException("Hesap bulunamadı"));
 
         account.setBalance(account.getBalance().add(java.math.BigDecimal.valueOf(amount)));
@@ -34,14 +35,15 @@ public class TransactionService {
         transaction.setAmount(amount);
         transaction.setTransactionTime(LocalDateTime.now());
         transaction.setType("DEPOSIT");
-        transaction.setAccountNumber(account.getId().toString());
+        transaction.setAccountIban(account.getIban());
 
         return transactionRepository.save(transaction);
     }
 
     // Para çekme
-    public Transaction withdraw(Long accountId, double amount) {
-        Account account = accountRepository.findById(accountId)
+    @Transactional
+    public Transaction withdraw(String iban, double amount) {
+        Account account = accountRepository.findByIban(iban)
                 .orElseThrow(() -> new RuntimeException("Hesap bulunamadı"));
 
         if (account.getBalance().compareTo(java.math.BigDecimal.valueOf(amount)) < 0) {
@@ -56,17 +58,18 @@ public class TransactionService {
         transaction.setAmount(amount);
         transaction.setTransactionTime(LocalDateTime.now());
         transaction.setType("WITHDRAW");
-        transaction.setAccountNumber(account.getId().toString());
+        transaction.setAccountIban(account.getIban());
 
         return transactionRepository.save(transaction);
     }
 
     // Para gönderme (havale)
-    public Transaction transfer(Long senderId, Long receiverId, double amount) {
-        Account sender = accountRepository.findById(senderId)
+    @Transactional
+    public Transaction transfer(String senderIban, String receiverIban, double amount) {
+        Account sender = accountRepository.findByIban(senderIban)
                 .orElseThrow(() -> new RuntimeException("Gönderen hesap bulunamadı"));
 
-        Account receiver = accountRepository.findById(receiverId)
+        Account receiver = accountRepository.findByIban(receiverIban)
                 .orElseThrow(() -> new RuntimeException("Alıcı hesap bulunamadı"));
 
         if (sender.getBalance().compareTo(java.math.BigDecimal.valueOf(amount)) < 0) {
@@ -85,13 +88,13 @@ public class TransactionService {
         transaction.setAmount(amount);
         transaction.setTransactionTime(LocalDateTime.now());
         transaction.setType("TRANSFER");
-        transaction.setAccountNumber(sender.getId().toString());
+        transaction.setAccountIban(sender.getIban());
 
         return transactionRepository.save(transaction);
     }
 
     // İşlem geçmişi (hem gönderen hem alıcı işlemleri)
-    public List<Transaction> getTransactionHistory(Long accountId) {
-        return transactionRepository.findByAccountIdOrTargetAccountId(accountId, accountId);
+    public List<Transaction> getTransactionHistory(String iban) {
+        return transactionRepository.findByAccountIbanOrTargetAccountIban(iban, iban);
     }
 }
