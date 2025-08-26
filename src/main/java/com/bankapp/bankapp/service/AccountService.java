@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class AccountService {
@@ -19,49 +18,42 @@ public class AccountService {
         this.accountRepository = accountRepository;
     }
 
-    // ✅ 1. Hesap Açma
+    // Hesap Açma (IBAN ile)
     public Account openAccount(User user) {
         Account account = new Account();
         account.setUser(user);
         account.setBalance(BigDecimal.ZERO); // başlangıç bakiyesi 0
         account.setActive(true); // açık hesap
         account.setCreatedAt(LocalDateTime.now());
+
+        // IBAN üretimi: TR + UUID ilk 20 karakter
+        String iban = "TR" + java.util.UUID.randomUUID().toString().replace("-", "").substring(0, 20);
+        account.setIban(iban);
+
         return accountRepository.save(account);
     }
 
-    // ✅ 2. Hesap Kapama (Aktifliği false yapar)
-    public Account closeAccount(Long accountId) {
-        Optional<Account> optionalAccount = accountRepository.findById(accountId);
-        if (optionalAccount.isPresent()) {
-            Account account = optionalAccount.get();
-            account.setActive(false); // hesabı pasif hale getir
-            return accountRepository.save(account);
-        } else {
-            throw new RuntimeException("Hesap bulunamadı.");
-        }
+    // Hesap Kapama (IBAN ile)
+    public Account closeAccount(String iban) {
+        Account account = getAccountByIban(iban);
+        account.setActive(false); // hesabı pasif hale getir
+        return accountRepository.save(account);
     }
 
-    // ✅ 3. Kullanıcının Hesaplarını Listele
+    // Kullanıcının Hesaplarını Listele
     public List<Account> getAccountsByUser(Long userId) {
         return accountRepository.findByUserId(userId);
     }
 
-    // ✅ 4. Hesabın Bakiyesini Görüntüle
-    public BigDecimal getBalance(Long accountId) {
-        Account account = accountRepository.findById(accountId)
-                .orElseThrow(() -> new RuntimeException("Hesap bulunamadı."));
+    // Hesabın Bakiyesini Görüntüle (IBAN ile)
+    public BigDecimal getBalance(String iban) {
+        Account account = getAccountByIban(iban);
         return account.getBalance();
     }
 
-    // ✅ 5. Hesabı ID ile Getir (gerektiğinde kullanmak için)
-    public Account getAccountById(Long id) {
-        return accountRepository.findById(id)
+    // Hesabı IBAN ile Getir
+    public Account getAccountByIban(String iban) {
+        return accountRepository.findByIban(iban)
                 .orElseThrow(() -> new RuntimeException("Hesap bulunamadı."));
     }
-
-    public Account save(Account account) {
-        return null;
-    }
 }
-
-

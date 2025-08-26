@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,27 +31,22 @@ public class AccountController {
             return ResponseEntity.badRequest().build();
         }
 
-        // İsteğin içinde name varsa onu kullan, yoksa varsayılan ver
-        String accountName = (requestAccount != null && requestAccount.getName() != null && !requestAccount.getName().isBlank())
-                ? requestAccount.getName()
-                : "Yeni Hesap";
+        Account account = accountService.openAccount(userOptional.get());
 
-        Account account = new Account();
-        account.setUser(userOptional.get());
-        account.setName(accountName); // ✅ doğru alan
-        account.setBalance(BigDecimal.ZERO);
-        account.setCreatedAt(LocalDateTime.now());
-        account.setActive(true);
+        // Eğer istekte name varsa onu kullan
+        if (requestAccount != null && requestAccount.getName() != null && !requestAccount.getName().isBlank()) {
+            account.setName(requestAccount.getName());
+            accountService.closeAccount(account.getIban()); // kaydı güncelle
+        }
 
-        Account savedAccount = accountService.save(account);
-        return ResponseEntity.ok(savedAccount);
+        return ResponseEntity.ok(account);
     }
 
-    // ✅ Hesap kapama (PUT)
-    @PutMapping("/close/{accountId}")
-    public ResponseEntity<Account> closeAccount(@PathVariable Long accountId) {
+    // ✅ Hesap kapama (PUT) - IBAN ile
+    @PutMapping("/close/{iban}")
+    public ResponseEntity<Account> closeAccount(@PathVariable String iban) {
         try {
-            Account account = accountService.closeAccount(accountId);
+            Account account = accountService.closeAccount(iban);
             return ResponseEntity.ok(account);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
@@ -69,22 +63,22 @@ public class AccountController {
         return ResponseEntity.ok(accounts);
     }
 
-    // ✅ Hesap bakiyesini getir (GET)
-    @GetMapping("/{accountId}/balance")
-    public ResponseEntity<BigDecimal> getBalance(@PathVariable Long accountId) {
+    // ✅ Hesap bakiyesini getir (GET) - IBAN ile
+    @GetMapping("/{iban}/balance")
+    public ResponseEntity<BigDecimal> getBalance(@PathVariable String iban) {
         try {
-            BigDecimal balance = accountService.getBalance(accountId);
+            BigDecimal balance = accountService.getBalance(iban);
             return ResponseEntity.ok(balance);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
     }
 
-    // ✅ Hesabı ID ile getir (GET)
-    @GetMapping("/{accountId}")
-    public ResponseEntity<Account> getAccountById(@PathVariable Long accountId) {
+    // ✅ Hesabı IBAN ile getir (GET)
+    @GetMapping("/{iban}")
+    public ResponseEntity<Account> getAccountByIban(@PathVariable String iban) {
         try {
-            Account account = accountService.getAccountById(accountId);
+            Account account = accountService.getAccountByIban(iban);
             return ResponseEntity.ok(account);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
