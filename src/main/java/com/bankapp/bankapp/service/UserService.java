@@ -1,21 +1,29 @@
 package com.bankapp.bankapp.service;
 
+import com.bankapp.bankapp.entity.Account;
 import com.bankapp.bankapp.entity.User;
+import com.bankapp.bankapp.repository.AccountRepository;
 import com.bankapp.bankapp.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
+    private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository,
+                       AccountRepository accountRepository,
+                       PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.accountRepository = accountRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -34,7 +42,19 @@ public class UserService {
         user.setEmail(email);
         user.setPassword(passwordEncoder.encode(password));
 
-        return userRepository.save(user);
+        // Kullanıcıyı kaydet
+        User savedUser = userRepository.save(user);
+
+        // Hesap oluştur
+        Account account = new Account();
+        account.setUser(savedUser);
+        account.setBalance(BigDecimal.ZERO);
+        account.setIban("TR" + UUID.randomUUID().toString().replace("-", "").substring(0, 20));
+        account.setName(savedUser.getUserName() + " Hesabı");
+
+        accountRepository.save(account);
+
+        return savedUser;
     }
 
     // --- Kullanıcı bul ---
@@ -48,6 +68,11 @@ public class UserService {
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
+    }
+
+    // --- Kullanıcıyı token ile bul ---
+    public Optional<User> findByToken(String token) {
+        return userRepository.findByToken(token);
     }
 
     // --- Mevcut updateUser metodunu koru ---
@@ -70,7 +95,7 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı."));
     }
 
-    // --- Yeni overload: User objesi ile update ---
+    // --- User objesi ile update ---
     public User updateUser(User user) {
         return userRepository.save(user);
     }

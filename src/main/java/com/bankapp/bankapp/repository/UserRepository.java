@@ -10,9 +10,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     // E-posta ile kullanıcıyı bulmak için
     Optional<User> findByEmail(String email);
 
-    // Girişte e-posta ve şifre ile kontrol
-    Optional<User> findByEmailAndPassword(String email, String password);
-
+    // Kullanıcı adı ile kullanıcıyı bulmak için
     Optional<User> findByUserName(String username);
 
+    // Token ile kullanıcıyı bulmak için
+    Optional<User> findByToken(String token);
 }
