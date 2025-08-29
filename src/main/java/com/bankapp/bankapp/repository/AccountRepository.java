@@ -13,4 +13,5 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
     // IBAN ile hesap bulma
     Optional<Account> findByIban(String iban);
+
 }

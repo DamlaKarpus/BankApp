@@ -28,6 +28,7 @@ public class Transaction {
     private Account targetAccount;
 
     // İşlem yapılan hesap IBAN numarası (string)
+    @Column(nullable = false, length = 26)
     private String accountIban;
 
     // Tutar
@@ -39,4 +40,5 @@ public class Transaction {
 
     // İşlem tipi (TRANSFER, DEPOSIT, WITHDRAW)
     private String type;
+
 }

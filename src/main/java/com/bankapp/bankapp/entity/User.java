@@ -6,6 +6,7 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -34,14 +35,24 @@ public class User {
     private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Account> accounts;
+    private List<Account> accounts = new ArrayList<>();
 
-    // Opsiyonel: register sırasında direkt DTO'dan doldurmak için constructor
     public User() {}
 
     public User(String userName, String email, String password) {
         this.userName = userName;
         this.email = email;
         this.password = password;
+    }
+
+    // Hesap eklemek için yardımcı metot
+    public void addAccount(Account account) {
+        accounts.add(account);
+        account.setUser(this);
+    }
+
+    public void removeAccount(Account account) {
+        accounts.remove(account);
+        account.setUser(null);
     }
 }
