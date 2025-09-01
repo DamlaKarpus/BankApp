@@ -34,8 +34,6 @@ public class User {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Account> accounts = new ArrayList<>();
 
     public User() {}
 
@@ -43,16 +41,5 @@ public class User {
         this.userName = userName;
         this.email = email;
         this.password = password;
-    }
-
-    // Hesap eklemek için yardımcı metot
-    public void addAccount(Account account) {
-        accounts.add(account);
-        account.setUser(this);
-    }
-
-    public void removeAccount(Account account) {
-        accounts.remove(account);
-        account.setUser(null);
     }
 }

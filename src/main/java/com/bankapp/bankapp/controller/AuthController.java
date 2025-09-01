@@ -43,8 +43,10 @@ public class AuthController {
             user.setToken(token);
             userService.updateUser(user);
 
+            // Token ve kullanıcı adı JSON olarak dön
             return ResponseEntity.ok(new Object() {
                 public String jwt = token;
+                public String userName = user.getUserName();
             });
 
         } catch (BadCredentialsException e) {
