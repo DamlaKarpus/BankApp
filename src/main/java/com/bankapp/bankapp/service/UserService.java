@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class UserService {
@@ -45,16 +44,26 @@ public class UserService {
         // Kullanıcıyı kaydet
         User savedUser = userRepository.save(user);
 
-        // Hesap oluştur
+        // Hesap oluştur ve varsayılan bakiye ata
         Account account = new Account();
         account.setUser(savedUser);
-        account.setBalance(BigDecimal.ZERO);
-        account.setIban("TR" + UUID.randomUUID().toString().replace("-", "").substring(0, 20));
+        account.setBalance(new BigDecimal("1000")); // Varsayılan bakiye
+        account.setIban(generateNumericIban());
         account.setName(savedUser.getUserName() + " Hesabı");
 
         accountRepository.save(account);
 
         return savedUser;
+    }
+
+    // --- Sadece sayılardan oluşan IBAN üret ---
+    private String generateNumericIban() {
+        StringBuilder iban = new StringBuilder("TR");
+        for (int i = 0; i < 22; i++) { // TR dahil toplam 24 karakter olacak
+            int digit = (int) (Math.random() * 10); // 0-9 arası sayı
+            iban.append(digit);
+        }
+        return iban.toString();
     }
 
     // --- Kullanıcı bul ---
