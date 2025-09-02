@@ -1,10 +1,13 @@
 package com.bankapp.bankapp.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -17,28 +20,25 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // İşlemi yapan hesap
-    @ManyToOne
-    @JoinColumn(name = "account_id", nullable = false)
+    // İşlemi yapan hesap (JSON'da dönmesin)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "account_id")
+    @JsonIgnore
     private Account account;
 
-    // Havale ise hedef hesap
-    @ManyToOne
-    @JoinColumn(name = "target_account_id")
-    private Account targetAccount;
-
-    // İşlem yapılan hesap IBAN numarası (string)
-    @Column(nullable = false, length = 26)
+    @Column(name = "account_iban", nullable = false, length = 26)
     private String accountIban;
 
-    // Tutar
-    private Double amount;
+    @Column(name = "target_account_iban", length = 26)
+    private String targetAccountIban;
 
-    // İşlem zamanı
+    @Column(nullable = false, precision = 19, scale = 2)
+    private BigDecimal amount;
+
     @CreationTimestamp
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime transactionTime;
 
-    // İşlem tipi (TRANSFER, DEPOSIT, WITHDRAW)
+    @Column(nullable = false, length = 20)
     private String type;
-
 }
