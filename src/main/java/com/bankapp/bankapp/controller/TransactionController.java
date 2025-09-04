@@ -108,19 +108,21 @@ public class TransactionController {
         }
     }
 
-    // İşlem geçmişi görüntüleme
-    @GetMapping("/history/{accountIban}")
-    public ResponseEntity<?> getTransactionHistory(@PathVariable String accountIban) {
+    // İşlem geçmişi görüntüleme (IBAN body'den alınacak)
+    @PostMapping("/history")
+    public ResponseEntity<?> getTransactionHistory(@RequestBody Map<String, String> request) {
         try {
+            String accountIban = request.get("accountIban");
             List<TransactionBaseModel> transactions = transactionService.getTransactionHistory(accountIban);
-            if (transactions.isEmpty()) {
-                return ResponseEntity.noContent().build();
-            }
 
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("message", "İşlem geçmişi getirildi");
             response.put("transactions", transactions);
+
+            if (transactions.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            }
 
             return ResponseEntity.ok(response);
         } catch (Exception e) {
@@ -131,4 +133,6 @@ public class TransactionController {
             ));
         }
     }
+
+
 }
