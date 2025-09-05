@@ -124,7 +124,8 @@ public class TransactionService {
 
     // İşlem geçmişi (hem gönderen hem alıcı işlemleri)
     public List<TransactionBaseModel> getTransactionHistory(String iban) {
-        List<Transaction> transactions = transactionRepository.findByAccountIbanOrTargetAccountIban(iban, iban);
+        List<Transaction> transactions =
+                transactionRepository.findByAccountIbanOrTargetAccountIbanOrderByTransactionTimeDesc(iban, iban);
 
         return transactions.stream().map(tx -> {
             TransactionBaseModel dto = new TransactionBaseModel();

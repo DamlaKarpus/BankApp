@@ -7,6 +7,9 @@ import java.util.List;
 
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
 
-    // IBAN üzerinden işlem geçmişini çekmek için
-    List<Transaction> findByAccountIbanOrTargetAccountIban(String accountIban, String targetAccountIban);
+    // IBAN üzerinden işlem geçmişini çekmek için (son yapılan işlem en üstte)
+    List<Transaction> findByAccountIbanOrTargetAccountIbanOrderByTransactionTimeDesc(
+            String accountIban,
+            String targetAccountIban
+    );
 }
