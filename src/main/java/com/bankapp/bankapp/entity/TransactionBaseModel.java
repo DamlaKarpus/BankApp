@@ -5,12 +5,14 @@ import java.time.LocalDateTime;
 
 public class TransactionBaseModel {
 
-    private String accountIban;
-    private String targetAccountIban; // Havale/transfer için
-    private BigDecimal amount;
-    private String type; // DEPOSIT, WITHDRAW, TRANSFER
-    private LocalDateTime transactionTime;
+    private String accountIban;          // İşlemi yapanın IBAN'ı
+    private String targetAccountIban;    // Transferlerde alıcının IBAN'ı
+    private BigDecimal amount;           // İşlem tutarı
+    private String type;                 // DEPOSIT, WITHDRAW, TRANSFER
+    private LocalDateTime transactionTime; // İşlem zamanı
+    private String targetUserName;       // Karşı tarafın kullanıcı adı
 
+    // --- Getters & Setters ---
     public String getAccountIban() {
         return accountIban;
     }
@@ -49,5 +51,13 @@ public class TransactionBaseModel {
 
     public void setTransactionTime(LocalDateTime transactionTime) {
         this.transactionTime = transactionTime;
+    }
+
+    public String getTargetUserName() {
+        return targetUserName;
+    }
+
+    public void setTargetUserName(String targetUserName) {
+        this.targetUserName = targetUserName;
     }
 }

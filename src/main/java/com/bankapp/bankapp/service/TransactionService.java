@@ -119,6 +119,11 @@ public class TransactionService {
         dto.setType("TRANSFER");
         dto.setTransactionTime(transaction.getTransactionTime());
 
+        // ✅ Alıcının kullanıcı adı ekleniyor
+        if (receiver.getUser() != null) {
+            dto.setTargetUserName(receiver.getUser().getUserName());
+        }
+
         return dto;
     }
 
@@ -134,6 +139,26 @@ public class TransactionService {
             dto.setAmount(tx.getAmount());
             dto.setType(tx.getType());
             dto.setTransactionTime(tx.getTransactionTime());
+
+            if ("TRANSFER".equalsIgnoreCase(tx.getType())) {
+                // Eğer ben gönderdiysem → alıcı adını getir
+                if (iban.equals(tx.getAccountIban()) && tx.getTargetAccountIban() != null) {
+                    accountRepository.findByIban(tx.getTargetAccountIban()).ifPresent(acc -> {
+                        if (acc.getUser() != null) {
+                            dto.setTargetUserName("Alıcı: " + acc.getUser().getUserName());
+                        }
+                    });
+                }
+                // Eğer bana geldiyse → gönderen adını getir
+                else if (iban.equals(tx.getTargetAccountIban()) && tx.getAccountIban() != null) {
+                    accountRepository.findByIban(tx.getAccountIban()).ifPresent(acc -> {
+                        if (acc.getUser() != null) {
+                            dto.setTargetUserName("Gönderen: " + acc.getUser().getUserName());
+                        }
+                    });
+                }
+            }
+
             return dto;
         }).toList();
     }
