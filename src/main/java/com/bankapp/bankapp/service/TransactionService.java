@@ -145,7 +145,7 @@ public class TransactionService {
                 if (iban.equals(tx.getAccountIban()) && tx.getTargetAccountIban() != null) {
                     accountRepository.findByIban(tx.getTargetAccountIban()).ifPresent(acc -> {
                         if (acc.getUser() != null) {
-                            dto.setTargetUserName("Alıcı: " + acc.getUser().getUserName());
+                            dto.setTargetUserName(acc.getUser().getUserName());
                         }
                     });
                 }
@@ -153,7 +153,7 @@ public class TransactionService {
                 else if (iban.equals(tx.getTargetAccountIban()) && tx.getAccountIban() != null) {
                     accountRepository.findByIban(tx.getAccountIban()).ifPresent(acc -> {
                         if (acc.getUser() != null) {
-                            dto.setTargetUserName("Gönderen: " + acc.getUser().getUserName());
+                            dto.setTargetUserName(acc.getUser().getUserName());
                         }
                     });
                 }
